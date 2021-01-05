@@ -1,0 +1,7 @@
+---
+# tasks file for create-user
+- name: Create user
+  user:
+    name: "{{ user }}"
+    comment: "{{ user }}"
+    shell: /bin/bash
