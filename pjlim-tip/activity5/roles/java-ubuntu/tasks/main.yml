@@ -1,0 +1,7 @@
+---
+# tasks file for java-ubuntu
+- name: install java
+  apt:
+    name: "{{ package }}"
+    state: present
+    update_cache: yes

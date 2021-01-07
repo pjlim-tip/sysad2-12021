@@ -1,0 +1,5 @@
+---
+# tasks file for packages-pip
+- name: installing packages via pip
+  pip:
+    name: "{{ package_pip }}"
