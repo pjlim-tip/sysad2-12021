@@ -1,0 +1,2 @@
+[ubuntu]
+10.0.2.2 ansible_ssh_pass=polpol123 ansible_ssh_user=pjlim
