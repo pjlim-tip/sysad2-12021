@@ -1,0 +1,5 @@
+[ubuntu]
+ubuntu-1920195 ansible_ssh_host=10.0.2.15 ansible_ssh_pass=polpol123 ansible_ssh_user=pjlim
+
+[centos]
+centos-1920195 ansible_ssh_host=127.0.0.1 ansible_ssh_pass=polpol123 ansible_ssh_user=pjlim
