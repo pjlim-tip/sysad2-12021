@@ -1,0 +1,19 @@
+---
+# tasks file for PHP_lamp
+
+- name: installing PHP
+  apt:
+    name:
+      - php
+      - libapache2-mod-php
+      - php-mysql
+    state: present
+    update_cache: no
+
+- name: creating php index.html
+  copy:
+    content: "Hello, this is an index file -created PHP host index.html -Quiz2.3"
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
