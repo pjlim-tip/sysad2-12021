@@ -1,0 +1,37 @@
+---
+# tasks file for ubuntu-packages
+- name: installing dhcpd
+  apt:
+    name: isc-dhcp-server
+    state: present
+    update_cache: yes
+
+- name: installing bind9
+  apt:
+    name: bind9
+    state: present
+    update_cache: yes
+
+- name: installing vsftpd
+  apt:
+    name: vsftpd
+    state: present
+    update_cache: yes
+
+- name: installing samba
+  apt:
+    name: samba
+    state: present
+    update_cache: yes
+
+- name: installing httpd
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+- name: installing mariadb
+  apt:
+    name: mariadb-server-10.3
+    state: present
+    update_cache: yes

@@ -1,0 +1,43 @@
+---
+# tasks file for centos-packages
+
+- name: This will install the dhcpd
+  yum:
+    name: dhcp-server
+    state: present
+    update_cache: yes
+
+- name: This will install the bind9
+  yum:
+    name: 
+      - bind
+      - bind-utils
+    state: present
+    update_cache: yes 
+
+- name: This will install the vsftpd
+  yum:
+    name: vsftpd
+    state: present
+    update_cache: yes
+
+- name: This will install the samba
+  yum:
+    name:
+      - samba
+      - samba-common
+      - samba-client
+    state: present
+    update_cache: yes
+
+- name: This will install the httpd
+  yum:
+    name: httpd
+    state: present
+    update_cache: yes
+
+- name: This will install the mariadb
+  yum:
+    name: mariadb-server
+    state: present
+    update_cache: yes
