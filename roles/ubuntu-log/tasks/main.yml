@@ -1,0 +1,26 @@
+---
+# tasks file for ubuntu-log
+- name: Installing logstash
+  apt:
+    name: logstash
+    state: present
+    update_cache: yes
+
+- name: Copying beats config
+  copy: 
+  src: configs/02-beats-input.conf
+  dest: /etc/logstash/conf.d/02-beats-input.conf
+
+- name: Copying elastic config file
+  copy:
+    src: configs/30-elasticsearch-output.conf
+    dest: /etc/logstash/conf.d/30-elasticsearch-output.conf
+
+- name: Testing logstash availability
+  shell: "-u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t"
+
+- name: Starting logstash
+  systemd:
+    state: started
+    name: logstash
+    enabled: yes

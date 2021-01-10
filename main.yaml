@@ -1,0 +1,119 @@
+---
+- name: Stopping firewall for all hosts
+  hosts: all
+  tasks:
+    - name: Stopping ufw
+      service:
+        name: ufw
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    
+    - name: On CentOs
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Installing ElasticSearch,Logstash,Kibana (ELK)
+  hosts: elk
+  tasks:
+    - name: installing elasticsearch on ubuntu
+      include_role:
+        name: ubuntu-elastic
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: installing kibana on ubuntu
+      include_role:
+        name: ubuntu-kib
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: installing logstash on ubuntu
+      include_role:
+        name: ubuntu-log
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+    
+    - name: installing elasticsearch on centos
+      include_role:
+        name: centos-elastic
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+    - name: installing kibana on centos
+      include_role:
+        name: centos-kib
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+    - name: installing logstash on ubuntu
+      include_role:
+        name: centos-log
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: installing nagios
+  hosts: nagios
+  tasks:
+    - name: On ubuntu
+      include_role:
+        name: ubuntu-nag
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: On centos
+      include_role:
+        name: centos-nag
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Installing influxdb, httpd and MariaDB
+  hosts: grafana
+  tasks:
+     - name: Installing influxdb on ubuntu
+       include_role:
+         name: ubuntu-inf
+       when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+     - name: Installing httpd on ubuntu
+       include_role:
+         name: ubuntu-httpd
+       when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+     - name: Installing mariadb on ubuntu
+       include_role:
+         name: ubuntu-maria
+       when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+     - name: Installing influxdb on centos
+       include_role:
+         name: centos-inf
+       when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+     - name: Installing httpd on ubuntu
+       include_role:
+         name: centos-httpd
+       when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+     - name: Installing mariadb on ubuntu
+       include_role:
+         name: centos-maria
+       when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Installing Grafana+Prometheus
+  hosts: prometheus
+  tasks:
+     - name: Installing Grafana on ubuntu
+       include_role:
+         name: ubuntu-graf
+       when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+     - name: Installing Grafana on centos
+       include_role:
+         name: centos-graf
+       when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+     - name: Installing prometheus on ubuntu
+       include_role:
+         name: ubuntu-prom
+       when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+     - name: Installing prometheus on ubuntu
+       include_role:
+         name: centos-prom
+       when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'        

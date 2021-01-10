@@ -1,0 +1,44 @@
+---
+# tasks file for centos-kib
+- name: Installing kibana
+  dnf:
+    name: kibana
+    state: present
+    
+- name: Configuring server port
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '#server.port$'
+    line: 'server.port: 5601'
+
+- name: Configuring server host
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '#server.host$'
+    line: 'server.host: localhost'
+
+- name: Configuring elastic hosts
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '#elasticsearch.hosts$'
+    line: 'elasticsearch.hosts: [http://localhost:9200]'
+
+- name: Starting kibana
+  systemd:
+    name: kibana
+    state: started
+    enabled: yes
+
+- name: Allowing port traffic on firewall
+  firewalld:
+    port: 5601/tcp
+    permanent: true
+    state: enabled
+  register: allowed_port
+
+- name: Restarting firewall
+  systemd:
+    name: firewalld
+    state: restarted
+    daemon_reload: yes
+  when: allowed_port.changed
