@@ -1,6 +1,6 @@
 ---
   - name: installing packages on ubuntu-1920195
-    hosts: ubuntu-1920195
+    hosts: ubvntu
 
     tasks:
     - name: install java
@@ -10,7 +10,7 @@
         update_cache: yes
 
   - name: installing packages on centos
-    hosts: centos-1920195
+    hosts: centos
 
     tasks:
     - name: install java
