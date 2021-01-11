@@ -1,0 +1,43 @@
+## Directory Summary for Quiz 5.1
+#### pjlim-tip/sysad2-12021
+  * __1920195__
+    * __quiz51__
+      * [README.md](./README.md)
+      * [ansible.cfg](./ansible.cfg)
+      * [inventory](./inventory)
+      * [main.yaml](./main.yaml)
+      * [__roles__](./roles)
+        * centos-elk
+	      * [README.md](./README.md)
+	      * defaults
+	      * files
+	      * handlers
+	        * main.yml
+	      * meta
+	        * main.yml
+	      * tasks
+	        * main.yml
+	      * templates
+	      * tasks
+	        * test.yml
+	      * inventory
+	      * vars
+	        * main.yml
+
+	* ubuntu-elk
+	      * [README.md](./README.md)
+	      * defaults
+	      * files
+	      * handlers
+	        * main.yml
+	      * meta
+	        * main.yml
+	      * tasks
+	        * main.yml
+	      * templates
+	      * tasks
+	        * test.yml
+	      * inventory
+	      * vars
+	        * main.yml
+

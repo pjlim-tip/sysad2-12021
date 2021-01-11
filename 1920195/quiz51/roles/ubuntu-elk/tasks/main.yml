@@ -1,0 +1,62 @@
+---
+# tasks file for ubuntu-elk
+- name: Installing docker on ubuntu
+  apt:
+    name: docker.io
+    state: latest
+    update_cache: yes
+  register: instdocker
+
+- name: Installing docker via pip
+  pip:
+    name: docker.py
+    state: latest
+  when: instdocker.changed
+
+- name: Pulling docker img
+  docker_image:
+    name: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+
+- name: Creating docker net
+  docker_network:
+    name: elastic
+
+- name: Creating elastic's container
+  docker_container:
+    name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+    state: present
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - name: elastic
+
+- name: Pulling kibana img
+  docker_image:
+    name: docker.elastic.co/kibana/kibana:7.10.1
+
+- name: Creating kibana container
+  docker_container:
+    name: kibana
+    image: docker.elastic.co/kibana/kibana:7.10.1
+    state: present
+    ports:
+      - "5601:2601"
+    networks:
+      - name: elastic
+
+- name: Pulling logstash img
+  docker_image:
+    name: docker.elastic.co/logstash/logstash:7.10.1
+
+- name: Creating logstash container
+  docker_container:
+    name: logstash
+    image: docker.elastic.co/logstash/logstash:7.10.1
+    state: present
+    ports:
+      - "5044:5044"
+    networks:
+      - name: elastic
+

@@ -1,0 +1,11 @@
+---
+
+- name: Installing elk on ubuntu
+  hosts: ubuntu
+  roles:
+    - ubuntu-elk
+
+- name: Installing elk on centos
+  hosts: centos
+  roles:
+    - centos-elk
