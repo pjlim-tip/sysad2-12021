@@ -8,6 +8,37 @@
       * [main.yaml](./main.yaml)
       * [__roles__](./roles)
         * centos-elk
+	      * [README.md](./roles/centos-elk/README.md)
+	      * defaults
+	      * files
+	      * handlers
+	        * main.yml
+	      * meta
+	        * main.yml
+	      * tasks
+	        * main.yml
+	      * templates
+	      * tasks
+	        * test.yml
+	      * inventory
+	      * vars
+	        * main.yml
+        * ubuntu-elk
+	      * [README.md](./roles/ubuntu-elk/README.md)
+	      * defaults
+	      * files
+	      * handlers
+	        * main.yml
+	      * meta
+	        * main.yml
+	      * tasks
+	        * main.yml
+	      * templates
+	      * tasks
+	        * test.yml
+	      * inventory
+	      * vars
+	        * main.yml ubuntu-elk
 	      * [README.md](./README.md)
 	      * defaults
 	      * files
@@ -23,21 +54,3 @@
 	      * inventory
 	      * vars
 	        * main.yml
-
-	* ubuntu-elk
-	      * [README.md](./README.md)
-	      * defaults
-	      * files
-	      * handlers
-	        * main.yml
-	      * meta
-	        * main.yml
-	      * tasks
-	        * main.yml
-	      * templates
-	      * tasks
-	        * test.yml
-	      * inventory
-	      * vars
-	        * main.yml
-
