@@ -1,0 +1,157 @@
+---
+# tasks file for ubuntu-nag
+- name: installing nagios requirements
+  apt:
+    name:
+      - build-essential
+      - apache2
+      - php
+      - openssl
+      - perl
+      - make
+      - php-gd
+      - libgd-dev
+      - libapache2-mod-php
+      - libperl-dev
+      - libssl-dev
+      - daemon
+      - wget
+      - apache2-utils
+      - unzip
+    state: present
+    update_cache: yes
+
+- name: Downloading nagios
+  get_url:
+    url: http://github.com./NagiosEnterprises/nagioscore/releases/download/nagios-4.4.6/nagios-4.4.6.tar.gz
+    dest: /tmp/nagios-4.4.6.tar.gz
+
+- name: Extracting files
+  unarchive:
+    src: /tmp/nagios-4.4.6.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: extract_nag
+
+- name: Compiling nagios
+  shell:
+    chdir: /tmp/nagios-4.4.6/
+    cmd: "./configure --with-httpd_conf=/etc/apache2/sites-enabled"
+  when: extract_nag.changed
+
+- name: Recompiling
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: all
+  when: extract_nag.changed
+
+- name: installing groups
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-groups-users
+  when: extract_nag.changed
+
+- name: Creating user
+  user: 
+    name: pjbuntu-nagios
+    comment: "New user pjbuntu-nagios created"
+    group: www-data
+    append: yes
+
+- name: run install
+  make: 
+    chdir: /tmp/nagios-4.4.6/
+    target: install
+  when: extract_nag.changed
+
+- name: installing daemoninit
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-daemoninit
+  when: extract_nag.changed
+
+- name: installing commandmode
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-commandmode
+  when: extract_nag.changed
+
+- name: installing config nagios
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-config
+  when: extract_nag.changed
+   
+- name: insatlling web interface
+    chdir: /tmp/nagios-4.4.6/
+    target: install-webconf
+  when: extract_nag.changed
+
+- name: installing passlib
+  pip:
+    name: passlib
+
+- name: Creating htpasswd file
+  htpasswd:
+    path: /usr/loacl/nagios/etc/htpasswd.users
+    name: pjlim-ubuntu-admin
+    password: polpol123
+
+- name: enabling httpd cgi
+  apache2_module:
+    name: cgi
+    state: present
+
+- name: Restarting httpd
+  systemd:
+    name: apache2
+    state: restarted
+  when: extract_nag.changed
+
+- name: installing exfoliation
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-exfoliation
+  when: extract_nag.changed
+
+- name: installing classicui
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-classicui
+  when: extract_nag.changed
+
+- name: Dowloading plugins
+  get_url:
+    url: https://github.com/nagios-plugins/nagios-plugins/releases/download/release-2.3.3/nagios-plugins-2.2.3.tar.gz
+    dest: /tmp/nagios-plugins-2.2.3.tar.gz
+  register: download_plugins
+
+- name: Extracting plugins
+  unarchive: 
+    src: /tmp/nagios-plugins-2.2.3.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: download_plugins.changed
+
+- name: Compiling plugins
+  shell:
+    chdir: /tmp/nagios-plugins-2.2.3
+    cmd: "./configure"
+  when: download_plugins.changed
+
+- name: Building default plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.2.3/
+  when: download_plugins.changed
+
+- name: Installing plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.2.3/
+    target: install
+  when: download_plugins.changed
+
+- name: Starting nagios
+  systemd:
+    state: started
+    name: nagios
+    enabled: yes

@@ -1,0 +1,135 @@
+---
+# tasks file for centos-prom
+- mame: Creating user
+  user:
+    name: pjlim-promet
+    shell: /bin/false
+
+- name: Creating directory
+  file:
+    path: /etc/prometheus
+    state: directory
+
+- name: Creating var/lib directory
+  file:
+    path: /var/lib/prometheus
+    state: directory
+    owner: pjlim-promet
+
+- name: Downloading prometheus tar file
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.14.0/prometheus-2.14.0.linux-amd64.tar.gz
+    dest: /tmp/prometheus-2.14.0.linux-amd64.tar.gz
+
+- name: Extracting prometheus tar file
+  unarchive:
+    src: /tmp/prometheus-2.14.0.linux-amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copying prometheus
+  copy:
+    src: /tmp/prometheus-2.14.0.linux-amd64/prometheus
+    dest: /usr/local/bin/prometheus
+    remote_src: yes
+
+- name: Copying promtool
+  copy:
+    src: /tmp/prometheus-2.14.0.linux-amd64/promtool
+    dest: /usr/local/bin/promtool
+    remote_src: yes
+
+- name: Copying config prometheus
+  copy:
+    src: config_files/prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+
+- name: Allowing port in firewall
+  firewalld:
+    port: 9090/tcp
+    permanent: yes
+    state: enabled
+  register: allow_port9090
+
+- name: Restarting firewall
+  service:
+    name: firewalld
+    state: restarted
+  when: allow_port9090.changed
+
+- name: Copying prometheus.service
+  copy:
+    src: config_files/prometheus.service
+    dest: /etc/systemd/system/prometheus.service
+
+- name: Reloading daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Starting/enabling prometheus
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+  when: allow_port9090.changed
+
+- name: Creating user for node exporter
+  user:
+    name: node_exporter
+    shell: /bin/false
+
+- name: Downloading node exporter
+  get_url:
+    url: https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz
+    dest: /tmp/node_exporter-0.18.1.linux-amd64.tar.gz
+
+- name: Extracting node exporter
+  unarchive:
+    src: /tmp/node_exporter-0.18.1.linux-amd64.tar.gz
+    dest: /tmp/
+    remote_src: yes
+
+- name: Copying node exporter
+  copy:
+    src: /tmp/node_exporter-0.18.1.linux-amd64/node-exporter
+    dest: /usr/local/bin/node_exporter
+    remote_src: yes
+    owner: node_exporter
+    group: node_exporter
+
+- name: Copying node exporter service
+  copy:
+    src: config_files/node_exporter.service
+    dest: /etc/systemd/system/node_exporter.service
+  register: copy_node_exporter_service
+
+- name: Reloading daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Starting node exporter
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: yes
+  when: copy_node_exporter_service.changed
+
+- name: allowing port9100
+  firewalld:
+    port: 9100/tcp
+    permanent: yes
+    state: enabled
+  register: allow_port9100
+
+- name: Restarting firewall
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: allow_port9100.changed
+
+- name: Restarting prometheus
+  systemd:
+    name: prometheus
+    state: restarted
+  when: allow_port9100.changed
+

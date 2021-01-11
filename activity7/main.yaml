@@ -1,0 +1,93 @@
+---
+- name: installing ELK requirements
+  hosts: grafama
+  tasks:
+    - name: Installing nginx on ubuntu
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: installing default-jre on ubuntu
+      apt:
+        name: default-jre
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: installing java on centos
+      yum:
+        name: java-1.8.0-openjdk
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Installing ElasticSearch,Logstash,Kibana (ELK)
+  hosts: elk
+  tasks:
+    - name: installing elasticsearch on ubuntu
+      include_role:
+        name: ubuntu-elastic
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: installing kibana on ubuntu
+      include_role:
+        name: ubuntu-kib
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: installing logstash on ubuntu
+      include_role:
+        name: ubuntu-log
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+    
+    - name: installing elasticsearch on centos
+      include_role:
+        name: centos-elastic
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+    - name: installing kibana on centos
+      include_role:
+        name: centos-kib
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+    - name: installing logstash on ubuntu
+      include_role:
+        name: centos-log
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: installing nagios
+  hosts: nagios
+  tasks:
+    - name: On ubuntu
+      include_role:
+        name: ubuntu-nag
+      when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+    - name: On centos
+      include_role:
+        name: centos-nag
+      when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Installing Grafana+Prometheus
+  hosts: prometheus
+  tasks:
+     - name: Installing Grafana on ubuntu
+       include_role:
+         name: ubuntu-graf
+       when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+     - name: Installing Grafana on centos
+       include_role:
+         name: centos-graf
+       when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+     - name: Installing prometheus on ubuntu
+       include_role:
+         name: ubuntu-prom
+       when: ansible_distribution == 'Ubuntu' or ansible_distribution == 'Debian'
+
+     - name: Installing prometheus on ubuntu
+       include_role:
+         name: centos-prom
+       when: ansible_distribution == 'CentOs' or ansible_distribution == 'Red Hat Enterprise Linux'
