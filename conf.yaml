@@ -1,0 +1,14 @@
+docker_repo: docker-ce.repo
+docker_user: pjlim
+
+web_docker_img_name: webser
+web_docker_img_tag: latest
+web_container_name: webserver
+web_ports: 80:80
+web_dockerfile_path: Dockerfiles/webser/
+
+db_docker_img_name: dbase
+db_docker_img_tag: latest
+db_container_name: dbserver
+db_ports: 3306:3306
+db_dockerfile_path: Dockerfiles/dbase/

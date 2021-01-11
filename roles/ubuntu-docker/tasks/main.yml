@@ -1,0 +1,27 @@
+---
+# tasks file for ubuntu-docker
+- name: Adding key
+  apt_key:
+    url: "{{ url }}"
+    state: present
+  when: url != ""
+
+- name: adding repository
+  apt_repository:
+    repo: "{{ repo }}"
+    filename: "{{ filename }}"
+    state: present
+  when: repo != ""
+
+- name: installing packages
+  apt:
+    name: "{{ package }}"
+    state: present
+    update_cache: yes
+
+- name: Starting docker
+  service:
+    name: "{{ service }}"
+    state: started
+    enabled: yes
+

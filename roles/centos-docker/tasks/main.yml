@@ -1,0 +1,19 @@
+---
+# tasks file for centos-docker
+- name: adding repo
+  copy:
+    src: "{{ src }}"
+    dest: "{{ dest }}"
+    mode: '0755'
+ 
+- name: installing packages
+  yum:
+    name: "{{ package }}"
+    state: present
+    update_cache: yes
+
+- name: Starting docker
+  service: 
+    name: "{{ service }}"
+    state: started
+    enabled: yes
