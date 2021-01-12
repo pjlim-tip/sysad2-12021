@@ -1,0 +1,22 @@
+---
+
+download: /tmp
+
+elast_url: https://artifacts.elastic.co/downloads/elasticsearch/
+elast_vers: elasticsearch-7.9.0
+elastic_yaml: /etc/elasticsearch/elasticsearch.yml
+elastic_cluster_name: pjlim
+elast_seeds: '"ubuntu","centos"'
+elastic_master: '"ubuntu","centos"'
+elastic_port: 9200
+
+kib_url: https://artifacts.elastic.co/downloads/kibana/
+kib_vers: kibana-7.9.0
+kibana_port: 5601
+
+log_url: https://artifacts.elastic.co/downloads/logstash/
+log_vers: logstash-7.9.0
+logstash_port: 5044
+
+fbeat_url: https://artifacts.elastic.co/downloads/beats/filebeat/
+fbeat_vers: filebeat-7.9.0

@@ -1,0 +1,60 @@
+---
+# tasks file for filebeat
+- name: Downloading filebeat on Ubuntu
+  get_url:
+    url: "{{ fbeat_url }}{{ fbeat_vers }}.deb"
+    dest: "{{ download }}"
+  when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Installing filebeat on ubuntu
+  become:
+  apt:
+    deb: "{{ download }}/{{ fbeat_vers }}.deb"
+    state: latest
+    update_cache: yes
+  when: ansible_facts['distribution'] == 'Ubuntu'
+
+- name: Downloading filebeat on centos
+  get_url:
+    url: "{{ fbeat_url }}{{ fbeat_vers }}-x86_64.rpm"
+    dest: "{{ download }}"
+  when: ansible_facts['distribution'] == 'CentOs'
+
+- name: Installing filebeat on ubuntu
+  become:
+  apt:
+    deb: "{{ download }}/{{ fbeat_vers }}.rpm"
+    state: latest
+    update_cache: yes
+  when: ansible_facts['distribution'] == 'CentOs'
+
+- name: Removing fbeat yml
+  become: yes
+  file:
+    path: /etc/filebeat/filebeat.yml
+    state: absent
+
+- name: recreating fbeat yml
+  become: yes
+  file:
+    path: /etc/filebeat/filebeat.yml
+    state: absent
+
+- name: Filebeat yaml config
+  become: yes
+  blockinfile:
+    path: /etc/filebeat/filebeat.yml
+    marker: ""
+    block: |
+      filebeat.inputs:
+      - type: log
+        paths:
+        - /var/log/*.log
+      output.logstash:
+        hosts: ["localhost:5044"]
+
+- name: Starting filebeat
+  service:
+    name: filebeat
+    state: started
+    enabled: yes

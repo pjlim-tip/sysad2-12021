@@ -1,0 +1,46 @@
+---
+# tasks file for centos-log
+- name: Gathering variables
+  include_vars:
+    file: ../../vars_file.yml
+
+- name: Downloading logstash
+  get_url:
+    url: "{{ log_url }}{{ log_vers }}.rpm"
+    dest: "{{ download }}"
+
+- name: Installing logstash
+  become: yes
+  yum:
+    deb: "{{ download }}/{{ logstash_version }}.rpm"
+    state: latest
+    update_cache: yes
+
+- name: Creating pipeline
+  become: yes
+  file:
+    path: /etc/logstash/conf.d/main.conf
+    state: touch
+
+- name: Adding pipeline
+  become: yes
+  blockinfile:
+    path: /etc/logstash/conf.d/main.conf
+    marker: ""
+    block: |
+      input {
+        beats {
+          port => 5044
+        }
+      }
+      output {
+        elasticsearch { hosts => ["192.168.120.1:9200"]
+        }
+      }
+
+- name: Starting logstash
+  become: yes
+  service:
+    name: logstash
+    state: started
+    enabled: yes

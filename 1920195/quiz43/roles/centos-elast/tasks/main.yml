@@ -1,0 +1,23 @@
+---
+# tasks file for centos-elast
+- name: Including vars_file
+  include_vars:
+    file: ../../vars_file.yml
+
+- name: Downloading elasticsearch
+  get_url:
+    url: "{{ elast_url }}{{ elast_vers }}-amd64.rpm"
+    dest: "{{ download }}"
+
+- name: Installing elasticsearch
+  become: yes
+  yum:
+    deb: "{{ download }}/{{ elast_vers }}-amd64.rpm"
+    state: latest
+    update_cache: yes
+
+- name: Starting elasticsearch
+  systemd:
+    name: elasticsearch
+    state: started
+    enabled: yes

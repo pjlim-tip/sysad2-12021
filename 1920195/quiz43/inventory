@@ -1,0 +1,16 @@
+[all:vars]
+ansible_ssh_user=pjlim
+ansible_ssh_private_key_file=/.pjlim.d/insecure_private_key
+ansible_ssh_port=22
+
+[elastic]
+ubuntu ansible_ssh_host=192.168.120.1
+centos ansible_ssh_host=192.168.120.2
+
+[kibana]
+ubuntu ansible_ssh_host=192.168.120.1
+centos ansible_ssh_host=192.168.120.2
+
+[logstash]
+ubuntu ansible_ssh_host=192.168.120.1
+centos ansible_ssh_host=192.168.120.2

@@ -1,0 +1,45 @@
+---
+# tasks file for elast_master
+- name: gathering vars
+  include_vars:
+    file: ../../vars_file.yml
+
+- name: Removing elastic config
+  become: yes
+  file:
+    path: "{{ elastic_yaml }}"
+    state: absent
+
+- name: Pause
+  wait_for:
+    timeout: 3
+
+- name: Readding elastic config
+  become: yes
+  file:
+    path: "{{ elastic_yaml }}"
+    state: touch
+
+- name: Elastic Config lines
+  become: yes
+  blockinfile:
+    path: "{{ elastic_yaml }}"
+    marker: ''
+    block: |
+       cluster.name: {{ elastic_cluster_name }}
+       node.name: {{ inventory_hostname }}
+       network.host: 0.0.0.0
+       http.port: {{ elastic_port }}
+       node.master: true
+       node.data: false
+       node.ingest: false
+       discovery.seeds_hosts: [{{ elast_seeds}}]
+       cluster.initial_master_nodes: [{{ elastic_master }}]
+       path.data: /var/lib/elasticsearch
+       path.logs: /var/log/elasticsearch
+
+- name: Starting elasticsearch
+  become: yes
+  service:
+    name: elasticsearch
+    state: started

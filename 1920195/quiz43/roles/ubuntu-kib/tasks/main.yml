@@ -1,0 +1,38 @@
+---
+# tasks file for ubuntu-kib
+- name: including vars_file
+  include_vars:
+    file: ../../vars_file.yml
+
+- name: Downloading kibana
+  get_url:
+    url: "{{ kib_url }}{{ kib_vers }}-amd64.deb"
+    dest: "{{ download }}"
+
+- name: Installing kibana
+  become: yes
+  apt:
+    deb: "{{ download }}/{{ kib_vers }}-amd64.deb"
+    state: latest
+    update_cache: yes
+
+- name: Updating kibana ip add
+  become: yes
+  lineinfile:
+    destfile: /etc/kibana/kibana.yml
+    regexp: 'server.host'
+    line: 'server.host: "0.0.0.0"'
+
+- name: Updating kibana url
+  become: yes
+  lineinfile:
+    destfile: /etc/kibana/kibana.yml
+    regexp: 'elasticsearch.hosts'
+    line: 'elasticsearch.hosts: ["http://192.168.120.1:9200"]'
+
+- name: Starting kibana
+  become: yes
+  service:
+    name: kibana
+    state: started
+    enabled: yes
