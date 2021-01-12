@@ -1,0 +1,48 @@
+---
+# tasks file for ubuntu-inf
+- name: adding influxdb repo
+  copy:
+    dest: /etc/apt/sources.list.d/influxdb.list
+    content: "deb https://repos.influxdata.com/ubuntu focal stable"
+
+- name: getting influxdata repo
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+
+- name: Installing influxdb through apt
+  apt:
+    name: influxdb
+    state: present
+    update_cache: yes
+
+- name: installing python3
+  yum:
+    name: python3-pip
+    state: present
+    update_cache: yes
+
+- name: installing influxdb using pip
+  pip:
+    name: influxdb
+
+- name: Starting influxdb
+  systemd:
+    name: influxdb
+    state: started
+    enabled: yes
+
+- name: enable http authentication
+  copy:
+    dest: /etc/influxdb/influxdb.conf
+    content: "|
+      [http]
+      auth-enabled = true"
+
+- name: Testing to create db
+  influxdb_database:
+    hostname: "ubuntu-1920195"
+    username: "pjlim"
+    password: "polpol123"
+    database_name: "centos-influxdb"
+    state: present

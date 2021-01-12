@@ -1,0 +1,158 @@
+---
+# tasks file for centos-nag
+
+- name: installing nagios requirements
+  yum:
+    name:
+      - httpd
+      - php
+      - gcc
+      - glibc
+      - glibc-common
+      - wget
+      - perl
+      - gd
+      - gd-devel
+      - unzip
+      - zip
+      - tar
+    update_cache: yes
+
+- name: Creating nagios group
+  group:
+    name: group-nag
+    state: present
+
+- name: Creating nagios user
+  user:
+    name: pjl-nag
+    comment: "User pjl-nag created"
+    group: group-nag
+
+- name: Appending new group
+  user:
+    apache: apache
+    group: group-nag
+
+- name: Downloading nagios
+  get_url:
+    url: http://assets.nagios.com/downloads/nagioscore/releases/nagios-4.4.5.tar.gz
+    dest: /tmp/
+
+- name: Extracting files
+  unarchive:
+    src: /tmp/nagios-4.4.5.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: extract_nag
+
+- name: Compiling nagios
+  shell:
+    chdir: /tmp/nagios-4.4.5/
+    cmd: "./configure"
+  when: extract_nag.changed
+
+- name: Recompiling
+  make:
+    chdir: /tmp/nagios-4.4.5/
+    target: all
+  when: extract_nag.changed
+
+- name: installing groups
+  make:
+    chdir: /tmp/nagios-4.4.5/
+    target: install-groups-users
+  when: extract_nag.changed
+
+- name: run install
+  make: 
+    chdir: /tmp/nagios-4.4.5/
+    target: install
+  when: extract_nag.changed
+
+- name: installing config
+  make:
+    chdir: /tmp/nagios-4.4.5/
+    target: install-config
+  when: extract_nag.changed
+
+- name: installing commandmode
+  make:
+    chdir: /tmp/nagios-4.4.5/
+    target: install-commandmode
+  when: extract_nag.changed
+   
+- name: insatlling web interface
+    chdir: /tmp/nagios-4.4.5/
+    target: install-webconf
+  when: extract_nag.changed
+
+- name: installing passlib
+  pip:
+    name: passlib
+
+- name: Creating htpasswd file
+  htpasswd:
+    path: /usr/loacl/nagios/etc/htpasswd.users
+    name: pjlim-centos-admin
+    password: polpol123
+
+- name: Configuring email
+  replace:
+    path: /usr/local/nagios/etc/objects/contact.cfg
+    regexp: '.email(.*)$'
+    replace: 'email: polpauljohn@gmail.com'
+  when: extract_nag.changed
+
+- name: Dowloading plugins
+  get_url:
+    url: https://nagios-plugins.org/download/nagios-plugins-2.2.1.tar.gz
+    dest: /tmp/nagios-plugins-2.2.1.tar.gz
+  register: download_plugins
+
+- name: Extracting plugins
+  unarchive: 
+    src: /tmp/nagios-plugins-2.2.1.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: download_plugins.changed
+
+- name: Compiling plugins
+  shell:
+    chdir: /tmp/nagios-plugins-2.2.1
+    cmd: "./configure"
+  when: download_plugins.changed
+
+- name: Building default plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.2.1/
+  when: download_plugins.changed
+
+- name: Installing plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.2.1/
+    target: install
+  when: download_plugins.changed
+
+- name: reloading daemon
+  systemd:
+    daemon-reload: yes
+
+- name: Starting nagios
+  systemd:
+    state: started
+    name: nagios
+    enabled: yes
+
+- name: allowing http
+  firewalld:
+    service: http
+    permanent: true
+    state: enabled
+  register: add_http
+
+- name: Restarting firewall
+  systemd: 
+    name: firewalld
+    state: restarted
+  when: add_http.changed

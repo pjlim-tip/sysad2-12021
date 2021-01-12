@@ -1,0 +1,34 @@
+---
+# tasks file for centos-log
+- name: Installing logstash
+  dnf:
+    name: logstash
+    state: present
+
+- name: Starting logstash
+  systemd:
+    state: started
+    name: logstash
+    enabled: yes
+
+- name: Install filebeat using yum
+  yum:
+    name: filebeat
+    state: present
+    update_cache: yes
+
+- name: Adding system module
+  shell: 'filebeat modules enable system'
+
+- name: Running filebeat setup
+  shell: 'filebeat setup'
+
+- name: Starting filebeat
+  service:
+    name: filebeat
+    state: started
+    enabled: yes
+
+- name: Checking availabilty of kib
+  uri:
+    url: http://localhost:5601

@@ -1,0 +1,33 @@
+---
+# tasks file for centos-graf
+
+- name: Adding grafana repo
+  copy:
+    src: configs/grafana.repo
+    dest: /etc/yum.repos.d/grafana.repo
+
+- name: Installing makecache and grafana
+  yum:
+    name:
+      - grafana
+    state: present
+    update_cache: yes
+
+- name: starting grafana
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+
+- name: Allowing graf port in fw
+  firewalld:
+    port: 3000/tcp
+    permanent: true
+    state: enabled
+  register: add_graf
+
+- name: Restarting firewall
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: add_graf.changed
