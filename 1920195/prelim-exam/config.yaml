@@ -1,0 +1,15 @@
+---
+- name: Prelim Exam
+  hosts: ubuntu
+    
+  vars:
+    username: "pjflim"
+    newuser: "pjbuntu"
+    comment: 'New user created'
+    motd: "Welcome! How is your day so far?"
+
+  roles:
+    - python3
+    - java
+    - change-motd
+    - create-user
