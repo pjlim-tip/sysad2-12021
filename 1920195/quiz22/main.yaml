@@ -1,0 +1,101 @@
+---
+  - name: installing packages on ubuntu-1920195
+    hosts: ubuntu
+
+    tasks:
+    - name: Installing Apache2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+
+    - name: Apache index
+      copy:
+        content: "This apache is an ansible-managed node"
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0664'
+      register: apache_index
+
+    - name: Allowing apache in ufw
+      ufw:
+        rule: allow
+        port: "80"
+        proto: tcp
+
+    - name: Enabling apache service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Restarting apache service
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+      when: apache_index.changed
+
+- name: Check availability of web service
+  hosts: localhost
+  connection: local
+  become: no
+
+  tasks:
+    - name: check availability of web_service
+      uri:
+        url: http://www.google.com
+
+- name: Installing and configuring MySQL
+  hosts: ubuntu
+  
+  tasks:
+    - name: installing MySQL
+      apt:
+        name: mysql-server
+        state: present
+        update_cache: yes
+
+    - name: mysql_index
+      copy:
+        content: "This mysql is ansible-managed node"
+        dest: /var/www/html/index1.html
+        owner: root
+        group: root
+        mode: '0644'
+      register: mysql_index
+
+    - name: starting mysql
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: restarting mysql
+      service:
+        name: mysql
+        state: restarted
+        enabled: yes
+        when: mysql_index.changed
+
+- name: Install and configure PHP
+  hosts: ubuntu
+  
+  tasks:
+    - name: installing PHP
+      apt:
+        name:
+          - php
+          - libapache2-mod-php
+          - php-mysql
+        state: present
+        update_cache: no
+
+    - name: Creating index.html for PHP
+      copy:
+        content: "Hello, I am Paul -created PHP host index.html"
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: '0644'
