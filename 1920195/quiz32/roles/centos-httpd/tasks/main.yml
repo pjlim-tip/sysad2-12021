@@ -1,0 +1,53 @@
+---
+# tasks file for centos-httpd
+
+- name: Installing httpd on Centos
+  yum:
+    name: httpd
+    state: present
+    update_cache: yes
+
+- name: Disabling firewall
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Creating Apache2 user on ubuntu
+  user:
+    name: pjcent-httpd
+    password: $5$HNh3kHFIaHsCwoAy$eDN/OqWlWrU83oC90/iVT6nndjYz26b492d8NDS6874
+    comment: "Created pjcent-httpd Apache2 user"
+
+- name: Denying user in sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "DenyUsers pjcent-httpd"
+  register: sshd_config
+
+- name: Restarting sshd
+  service:
+    name: sshd
+    state: restarted
+  when: sshd_config.changed
+
+- name: Creating domain directory
+  file:
+    path: /var/www/pjcent-httpd
+    state: directory
+    owner: pjcent-httpd
+    group: pjcent-httpd
+    mode: '0755'
+
+- name: Creating index.html
+  copy:
+    content: "Hello, I am pjcent-httpd"
+    dest: /var/www/pjcent-httpd/index.html
+  register: apache_index
+
+- name: Restarting apache2
+  service:
+    name: httpd
+    state: restarted
+    enabled: yes
+  when: apache_index.changed

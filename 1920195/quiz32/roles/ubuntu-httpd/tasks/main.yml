@@ -1,0 +1,53 @@
+---
+# tasks file for ubuntu-httpd
+
+- name: Installing Apache2 on ubuntu
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+- name: Disabling firewall
+  service:
+    name: ufw
+    state: stopped
+    enabled: no
+
+- name: Creating Apache2 user on ubuntu
+  user:
+    name: pjbuntu-httpd
+    password: $5$HNh3kHFIaHsCwoAy$eDN/OqWlWrU83oC90/iVT6nndjYz26b492d8NDS6874
+    comment: "Created pjbuntu-httpd Apache2 user"
+
+- name: Denying user in sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "DenyUsers pjbuntu-httpd"
+  register: sshd_config
+
+- name: Restarting sshd
+  service:
+    name: sshd
+    state: restarted
+  when: sshd_config.changed
+
+- name: Creating domain directory
+  file:
+    path: /var/www/pjbuntu-httpd
+    state: directory
+    owner: pjbuntu-httpd
+    group: pjbuntu-httpd
+    mode: '0755'
+
+- name: Creating index.html
+  copy:
+    content: "Hello, I am pjbuntu-httpd"
+    dest: /var/www/pjbuntu-httpd/index.html
+  register: apache_index
+
+- name: Restarting apache2
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes
+  when: apache_index.changed

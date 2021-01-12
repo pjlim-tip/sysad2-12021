@@ -1,0 +1,5 @@
+[ubuntu]
+ansible_ssh_host=192.168.120.1 ansible_ssh_pass=polpol123 ansible_ssh_user=pjlim
+
+[centos]
+ansible_ssh_host=192.168.120.2 ansible_ssh_pass=polpol123 ansible_ssh_user=pjlim

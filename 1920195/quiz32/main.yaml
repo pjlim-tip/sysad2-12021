@@ -1,0 +1,11 @@
+---
+
+- name: installing and configuring httpd on ubuntu-1920195
+  hosts: ubuntu
+  roles:
+    - ubuntu-httpd
+
+- name: installing and configuring httpd on centos-1920195
+  hosts: centos
+  roles:
+    - centos-httpd
