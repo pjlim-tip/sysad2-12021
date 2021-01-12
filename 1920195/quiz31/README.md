@@ -4,6 +4,7 @@
     * __quiz31__
       * [README.md](./README.md)
       * [ansible.cfg](./ansible.cfg)
+      * [confi_vsftpd.conf](./confi_vsftpd.conf)
       * [inventory](./inventory)
       * [main.yaml](./main.yaml)  
       * [roles](./roles)  
