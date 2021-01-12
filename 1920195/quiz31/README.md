@@ -2,13 +2,13 @@
 #### pjlim-tip/sysad2-12021
   * __1920195__
     * __quiz31__
-      * [README.md](1920195/quiz31/README.md)
-      * [ansible.cfg](1920195/quiz31/ansible.cfg)
-      * [inventory](1920195/quiz31/inventory)
-      * [main.yaml](1920195/quiz31/main.yaml)  
-      * [roles](1920195/quiz31/roles)  
+      * [README.md](./README.md)
+      * [ansible.cfg](./ansible.cfg)
+      * [inventory](./inventory)
+      * [main.yaml](./main.yaml)  
+      * [roles](./roles)  
         * centos-conf  
-	      * [README.md]  
+	      * [README.md](./roles/centos-conf/README.md)  
 	      * defaults  
 	      * files  
 	      * handlers  
@@ -25,7 +25,7 @@
 	        * main.yml
 
         * centos-vsftpd  
-	      * [README.md]  
+	      * [README.md](./roles/centos-vsftpd/README.md)  
 	      * defaults  
 	      * files  
 	      * handlers  
@@ -42,7 +42,7 @@
 	        * main.yml
 
         * ubuntu-conf  
-	      * [README.md]  
+	      * [README.md](./roles/ubuntu-conf/README.md)  
 	      * defaults  
 	      * files  
 	      * handlers  
@@ -59,7 +59,7 @@
 	        * main.yml
 
         * ubuntu-vsftpd  
-	      * [README.md]  
+	      * [README.md](./roles/ubuntu-vsftpd/README.md)  
 	      * defaults  
 	      * files  
 	      * handlers  
