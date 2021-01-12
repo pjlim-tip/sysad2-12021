@@ -1,0 +1,30 @@
+---
+# tasks file for MySQL
+
+- name: install mySQL
+  apt:
+    name: mysql-server
+    state: present
+    update_cache: no
+
+- name: creating index.html
+  copy:
+    content: "Hello, this is a host index -create MySQL host index.html -Quiz2.3"
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+  register: mysql_index
+
+- name: starting mysql
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+
+- name: restarting mysql
+  service:
+    name: mysql
+    state: restarted
+    enabled: yes
+  when: mysql_index.changed

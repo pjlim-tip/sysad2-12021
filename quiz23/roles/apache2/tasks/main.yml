@@ -1,0 +1,40 @@
+---
+# tasks file for apache2
+
+- name: installing apache2
+  apt:
+    name: apache2
+    state: present
+    update_cache: no
+
+- name: create index.html
+  copy:
+    content: "Hello, this is an apache index -created apache index.html -Quiz2.3"
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: '0644'
+  register: apache_index
+
+- name: starting apache
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: restarting apache
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes
+  when: apache_index.changed
+
+- name: permitting apache2 in port80
+  ufw:
+    rule: allow
+    port: '80'
+    protocol: tcp
+
+- name: enable ufw
+  ufw:
+    state: disabled

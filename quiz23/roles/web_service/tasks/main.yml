@@ -1,0 +1,6 @@
+---
+# tasks file for web_service
+
+- name: checking availability of webservice
+  uri:
+    url: http://www.google.com/
