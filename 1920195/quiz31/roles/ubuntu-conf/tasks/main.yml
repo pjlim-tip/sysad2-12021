@@ -1,0 +1,54 @@
+---
+# tasks file for ubuntu-conf
+
+- name: Disabling firewall
+  service:
+    name: ufw
+    state: stopped
+    enabled: no
+
+- name: Creating ftp user
+  user:
+    name: ubuntu-pjftp
+    password: $5$WKnbme1uyGQy6UqS$r/Gn.JCLAeuL5Gss3bBxtGMeRU45UYpt1gI1TGla316
+    comment: "ubuntu-pjftp user"
+
+- name: Denying user in sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "DenyUsers ubuntu-pjftp"
+  register: sshd_config
+
+- name: Restarting sshd
+  service:
+    name: sshd
+    state: restarted
+  when: sshd_config.changed
+
+- name: Creating ftp directory
+  file:
+    path: /home/ubuntu-pjftp/ftp
+    state: directory
+    owner: nobody
+    group: nogroup
+    mode: '0555'
+
+- name: Creating files directory
+  file:
+    path: /home/ubuntu-pjftp/ftp/files
+    state: directory
+    owner: ubuntu-pjftp
+    group: ubuntu-pjftp
+
+- name: Copying confi_vsftpd.conf
+  copy:
+    src: confi_vsftpd.conf
+    dest: /etc/vsftpd.conf
+  register: vsftpd_config
+
+- name: Restarting vsftpd
+  service:
+    name: vsftpd
+    state: restarted
+  when: vsftpd_config.changed
+

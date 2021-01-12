@@ -1,0 +1,8 @@
+---
+# tasks file for ubuntu-vsftpd
+
+- name: Installing vsftpd on ubuntu
+  apt: 
+    name: vsftpd
+    state: present
+    update_cache: yes

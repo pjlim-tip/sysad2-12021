@@ -1,0 +1,13 @@
+---
+
+- name: installing and configuring vsftpd on ubuntu-1920195
+  hosts: ubuntu
+  roles:
+    - ubuntu-vsftpd
+    - ubuntu-conf
+
+- name: installing and configuring vsftpd on centos-1920195
+  hosts: centos
+  roles:
+    - centos-vsftpd
+    - centos-conf
