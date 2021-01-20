@@ -1,0 +1,40 @@
+---
+# tasks file for cent-vsftpd
+- name: Denying user
+  become: yes
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "DenyUser {{ ftp_user }}"
+  register: sshd_config
+
+- name: creating ftp directory
+  become: yes
+  file:
+    path: /home/final-exam/ftp
+    state: directory
+    owner: '{{ ftp_user }}'
+    group: '{{ ftp_user }}'
+    mode: '0555'
+
+- name: creating files directory
+  become: yes
+  file:
+    path: /home/final-exam/files
+    state: directory
+    owner: '{{ ftp_user }}'
+    group: '{{ ftp_user }}'
+    mode: '0555'
+
+- name: Copying vsftpd.conf
+  become: yes
+  copy:
+    src: vsftpd.conf
+    dest: /etc/vsftpd.conf
+    register: vsftpd_config
+
+- name: restarting vsftpd
+  become: yes
+  service:
+    name: vsftpd
+    state: restarted
+  when: vsftpd_config.changed

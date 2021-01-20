@@ -1,0 +1,42 @@
+---
+# tasks file for clone_prelim
+- package_facts:
+    manager: "auto"
+  tasks:
+    - name: "Result"
+      debug:
+        msg: "Git found"
+      when: "'git' in ansible_facts.packages"
+
+    - name: "Result"
+      debug:
+        msg: "Git not found"
+      when: "'git' not in ansible_facts.packages"
+
+    - name: "Installing git on Debian"
+      apt:
+        name: git
+        state: present
+        update_cache: yes
+      when: "'git' not in ansible_facts.packages" and ansible_distribution == 'Debian'
+
+    - name: "Installing git on CentOS"
+      yum:
+        name: git
+        state: present
+        update_cache: yes
+      when: "'git' not in ansible_facts.packages" and ansible_distribution == 'Centos'
+
+    - name: "Installing git on openSUSE"
+      zypper:
+        name: git
+        state: present
+        update_cache: yes
+      when: "'git' not in ansible_facts.packages" and ansible_os_family == 'Suse'
+
+- name: Cloning prelim-exam
+  become: yes
+  git:
+    repo: '{{ git_repo }}' 
+    dest: '{{ git_dest }}'
+    version: '{{ git_ver }}'

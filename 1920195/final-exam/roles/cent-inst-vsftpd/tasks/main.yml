@@ -1,0 +1,23 @@
+---
+#tasks file for cent-inst-vsftpd
+- name: installing vsftpd
+  become: yes
+  yum:
+    name: vsftpd
+    state: present
+    update_cache: yes
+
+- name: Disabling firewall
+  become: yes
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: ftp user creating
+  become: yes
+  user:
+    name: '{{ ftp_user }}'
+    password: '{{ ftp_user }}'
+    comment: "User created"
+

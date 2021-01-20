@@ -1,0 +1,76 @@
+---
+- name: Disabling firewall on hosts
+  hosts: all
+  tasks:
+    - name: disabling firewall on debian
+      systemd:
+        name: ufw
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'Debian'
+
+    - name: on CentOS and openSUSE
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'Centos' or ansible_os_family == 'Suse'
+
+- name: Cloning Prelim exam
+  hosts: all
+  tasks:
+    - name: installing git and cloning prelim-exam
+      include_role:
+        name: clone_prelim
+
+- name: gathering config.yaml
+  hosts: debian
+  tasks:
+    - name: gathering data from config.yaml
+      include_vars:
+        file: config.yaml
+
+- name: Changing MOTD on CentOS and openSUSE
+  become: yes
+  hosts:
+    - centos
+    - opensuse
+  tasks:
+    - name: changing motd
+      lineinfile:
+        path: /etc/motd
+        line: "{{ motd }}"
+
+- name: Changing MOTD on Debian
+  hosts: debian
+  tasks:
+    - name: modified MOTD
+      become: yes
+      command: sh -c 'echo "{{ motd }}" > /etc/motd'
+
+- name: Installing packages on Debian
+  hosts: debian
+  roles:
+    - deb-nag
+    - deb-inst-nag
+    - deb-vsftpd
+    - deb-inst-vsftpd
+
+- name: Installing packages on CentOS
+  hosts: centos
+  roles:
+    - cent-nag
+    - cent-inst-nag
+    - cent-vsftpd
+    - cent-inst-vsftpd
+
+- name: Installing packages on openSUSE
+  hosts: opensuse
+  roles:
+    - suse-nag
+    - suse-inst-nag
+    - suse-vsftpd
+    - suse-inst-vsftpd
+
+
+

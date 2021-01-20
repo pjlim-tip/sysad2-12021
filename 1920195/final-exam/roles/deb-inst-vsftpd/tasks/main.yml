@@ -1,0 +1,28 @@
+---
+# tasks file for deb-inst-vsftpd
+- name: Installing vsftpd
+  become: yes
+  apt: 
+    name: vsftpd
+    state: present
+    update_cache: yes
+
+- name: Installing firewall
+  become: yes
+  apt:
+    name: ufw
+    state: present
+
+- name: Disabling firewall
+  become: yes
+  service:
+    name: ufw
+    state: stopped
+    enabled: no
+
+- name: Starting vsftpd
+  become: yes
+  service:
+    name: vsftpd
+    state: started
+    enabled: yes

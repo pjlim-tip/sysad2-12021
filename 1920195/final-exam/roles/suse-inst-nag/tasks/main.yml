@@ -1,0 +1,84 @@
+---
+# tasks file for suse-inst-nag
+- name: installing httpd
+  become: yes
+  zypper:
+    name: httpd
+    state: present
+
+- name: installing prerequisites
+  become: yes
+  zypper:
+    name:
+      - apache2
+      - gcc
+      - unzip
+      - glibc
+      - gd
+      - perl
+      - php7
+      - apache2-mod_php7
+      - make
+      - nagios
+    state: present
+    update_cache: yes
+
+- name: enabling php7
+  become: yes
+  shell: 'a2enmod php7'
+
+- name: adding group
+  become: yes
+  group:
+    name: nagios
+    state: present
+
+- name: adding second group
+  become: yes
+  group:
+    name: nagcmd
+    state: present
+
+- name: adding third group
+  become: yes
+  group:
+    name: nagadmin
+    state: present
+
+- name: Creating nagios user
+  become: yes
+  user:
+    name: nagios
+    comment: "User created"
+    group: nagadmin
+
+- name: add www run
+  become: yes
+  user:
+    name: wwwrun
+    group: nagadmin
+    append: yes
+
+- name: creating downloads directory
+  file:
+    path: /downloads/
+    state: directory
+
+- name: downloading nagios
+  become: yes
+  get_url:
+    url: https://prdownloads.sourceforge.net/sourceforge/nagios/nagios-4.2.1.tar.gz
+    dest: /downloads/
+
+- name: extracting nagios
+  become: yes
+  unarchive:
+    src: /downloads/nagios-4.2.1.tar.gz
+    dest: /downloads/
+    remote_src: yes
+
+- name: creating hosts
+  become: yes
+  file:
+    path: /etc/httpd/conf.d
+    state: directory

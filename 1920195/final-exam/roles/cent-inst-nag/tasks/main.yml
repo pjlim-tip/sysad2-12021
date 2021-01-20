@@ -1,0 +1,82 @@
+---
+# tasks file for cent-inst-nag
+- name: installing httpd
+  become: yes
+  yum:
+    name: httpd
+    state: present
+    update_cache: yes
+
+- name: installing prerequisites
+  become: yes
+  yum:
+    name:
+      - perl
+      - gcc
+      - glibc
+      - glibc-common
+      - unzip
+      - gd
+      - gd-devel
+      - postfix
+    state: present
+
+- name: adding group
+  become: yes
+  group:
+    name: nagios
+    state: present
+
+- name: adding second group
+  become: yes
+  group:
+    name: nagcmd
+    state: present
+
+- name: adding user
+  become: yes
+  user:
+    name: nagios
+    shell: /bin/bash
+    comment: 'User created'
+    group: nagios
+    password: '{{ nagios_pass }}'
+
+- name: adding user to group
+  become: yes
+  user:
+    name: nagios
+    group: nagcmd
+    append: yes
+
+- name: adding www data
+  become: yes
+  user:
+    name: www-data
+    group: nagcmd
+    append: yes
+
+- name: creating download directory
+  become: yes
+  file:
+    path: /downloads/
+    state: directory
+
+- name: downloading nagios
+  become: yes
+  get_url:
+    url: http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-4.2.1.tar.gz
+    dest: /downloads/
+
+- name: downloading plugins
+  become: yes
+  get_url:
+    url: http://nagios-plugins.org/download/nagios-plugins-2.3.3.tar.gz
+    dest: /downloads/
+
+- name: extracting nagios
+  become: yes
+  unarchive:
+    src: /downloads/nagios-4.2.1.tar.gz
+    dest: /downloads/
+    remote_src: yes

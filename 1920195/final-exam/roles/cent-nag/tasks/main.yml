@@ -1,0 +1,70 @@
+---
+# tasks file for cent-nag
+- name: Nagios script
+  become: yes
+  shell: ./configure --with-command-group=nagcmd --with-httpd_conf=/etc/httpd/conf.d
+  args:
+    chdir: /downloads/nagios-4.2.1
+
+- name: compiling nagios
+  become: yes
+  make:
+    chdir: /downloads/nagios-4.2.1
+    target: all
+
+- name: Installing binaries
+  become: yes
+  make:
+    chdir: /downloads/nagios-4.2.1
+    target: install
+
+- name: Installing script
+  become: yes
+  make:
+    chdir: /downloads/nagios-4.2.1
+    target: install-daemoninit
+
+- name: Installing config files
+  become: yes
+  make:
+    chdir: /downloads/nagios-4.2.1
+    target: install-config
+
+- name: Installing set permissions
+  become: yes
+  make:
+    chdir: /downloads/nagios-4.2.1
+    target: install-commandmode
+
+- name: Installing web interface
+  become: yes
+  make:
+    chdir: /downloads/nagios-4.2.1
+    target: install-webconf
+
+- name: installing pip
+  become: yes
+  yum:
+    name: python3-pip
+    state: present
+    update_cache: yes
+
+- name: installing htpasswd
+  become: yes
+  pip:
+    name: passlib
+    state: latest
+
+- name: Creating nagiosadmin
+  become: yes
+  htpasswd:
+    path: /usr/local/nagios/etc/htpasswd.users
+    name: nagiosadmin
+    password: '{{ nagios_adpass }}'
+
+- name: Restarting nagios
+  become: yes
+  service:
+    name: nagios
+    state: started
+    enabled: yes

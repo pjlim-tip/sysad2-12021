@@ -1,0 +1,17 @@
+---
+# Prelim exam repository
+git_repo: 'https://github.com/pjlim-tip/sysad2-12021.git'
+git_dest: "home/$USER/sysad2-12021"
+git_ver: 'prelim-exam'
+username: pjlim-tip
+
+ftp_user: ftp_user
+ftp_pass: $6$FAF7gJ7NWNr7PXrc$vQGsFHp2qs4lY3P2.mvzutqaiMFPpwoWw/Sz//QAXOONu6vti1beVfTaZI7vL6Kb41U1av9LVPsj.lb8sCKij1
+$
+
+nagios_admin: nag_ad
+nagios_adpass: $6$Mc9fH8xOrCPq8H/m$O6mpdoctdS8HwgqvtChYo8kIv6HrCbkgrzm1jKWEtSe9NKmHy2kNjjjmIQyAt/LuqYstJJtqyZ7JRKb28fEu4/
+$
+nagios_pass: $6$Q6az/4Wqkl2Ap3Q5$0QK/DGIqowVka26W2JksB3NRsc0KPIKvoVKFEUq4r5stdCtWuiROAR0FLw7hBKjG2jUBR2zdxZ0pCBxqzAGqG.
+
+motd: "Ansible Managed by pjlim-tip"
